@@ -1,4 +1,4 @@
-# 🛰️ SatAnalyze — Satellite Band Analysis Platform
+# 🛰️ Satellite Analysis Streamlit App
 
 **Upload band → Hitung spectral index → Analisis area tutupan lahan**
 
@@ -6,7 +6,7 @@
 
 ## 📌 Overview
 
-**SatAnalyze** adalah REST API + dashboard interaktif untuk analisis citra satelit.
+REST API + dashboard interaktif untuk analisis citra satelit.
 Mendukung berbagai sensor (Sentinel, Landsat, MODIS, UAV) untuk menghitung spectral index dan klasifikasi tutupan lahan secara otomatis.
 
 **Output:** statistik area + GeoTIFF + GeoJSON
