@@ -27,6 +27,8 @@ def compute_threshold(
     """
     # Flatten dan filter nodata
     valid = index_array[~np.isnan(index_array)].flatten()
+    if valid.size == 0:
+        raise ValueError("index_array tidak memiliki pixel valid untuk thresholding")
 
     if method == "otsu":
         # Otsu: cari threshold yang memaksimalkan variance antar kelas
@@ -49,6 +51,10 @@ def compute_threshold(
         )
 
     elif method == "manual":
+        if manual_value is None:
+            raise ValueError("manual_value wajib diisi untuk threshold manual")
+        if not -1.0 <= manual_value <= 1.0:
+            raise ValueError("manual_value harus berada dalam rentang -1.0 sampai 1.0")
         return ThresholdResult(
             method="manual",
             value=manual_value,

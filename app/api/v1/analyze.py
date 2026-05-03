@@ -1,5 +1,5 @@
 # app/api/v1/analyze.py
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from fastapi.responses import FileResponse
 from typing import Annotated
 import rasterio
@@ -32,6 +32,7 @@ def load_band(file: UploadFile) -> tuple[np.ndarray, dict]:
             "crs":       src.crs,
             "transform": src.transform,
             "resolution": src.res,               # (pixel_width, pixel_height) in CRS units
+            "bounds":    tuple(src.bounds),
             "shape":     (src.height, src.width),
             "nodata":    src.nodata,
         }
@@ -60,12 +61,36 @@ def validate_bands_compatible(metas: list[dict]) -> float:
             "Semua band harus memiliki resolusi dan dimensi yang identik."
         )
 
-    crs_list = [str(m["crs"]) for m in metas if m["crs"]]
+    crs_list = [str(m["crs"]) if m["crs"] else None for m in metas]
     if len(set(crs_list)) > 1:
         raise HTTPException(
             400,
             f"CRS band tidak konsisten: {set(crs_list)}. "
             "Reproject semua band ke CRS yang sama terlebih dahulu."
+        )
+
+    resolutions = [tuple(float(v) for v in m["resolution"]) for m in metas]
+    if not all(np.allclose(resolutions[0], res, rtol=0, atol=1e-9) for res in resolutions[1:]):
+        raise HTTPException(
+            400,
+            f"Resolusi band tidak konsisten: {resolutions}. "
+            "Resample semua band ke resolusi pixel yang sama terlebih dahulu."
+        )
+
+    transforms = [tuple(float(v) for v in m["transform"]) for m in metas]
+    if not all(np.allclose(transforms[0], tr, rtol=0, atol=1e-9) for tr in transforms[1:]):
+        raise HTTPException(
+            400,
+            "Transform/georeferencing band tidak sama. "
+            "Semua band harus berada pada grid pixel, origin, dan rotasi yang identik."
+        )
+
+    bounds = [tuple(float(v) for v in m["bounds"]) for m in metas]
+    if not all(np.allclose(bounds[0], b, rtol=0, atol=1e-6) for b in bounds[1:]):
+        raise HTTPException(
+            400,
+            f"Extent/bounds band tidak sama: {bounds}. "
+            "Crop atau align semua band ke extent yang sama terlebih dahulu."
         )
 
     # Estimasi resolusi dalam meter
@@ -124,6 +149,18 @@ async def analyze_from_bands(
             f"Band yang belum diupload: {missing}"
         )
 
+    if threshold_method == ThresholdMethod.manual:
+        if manual_threshold is None:
+            raise HTTPException(
+                422,
+                "manual_threshold wajib diisi jika threshold_method=manual"
+            )
+        if not -1.0 <= manual_threshold <= 1.0:
+            raise HTTPException(
+                422,
+                "manual_threshold harus berada dalam rentang -1.0 sampai 1.0"
+            )
+
     # ── 3. Load semua band yang dibutuhkan ─────────────────
     bands = {}
     metas = []
@@ -139,6 +176,12 @@ async def analyze_from_bands(
     # ── 5. Hitung index ────────────────────────────────────
     index_array = idx_def.formula(bands)
     index_array = np.clip(index_array, *idx_def.value_range)
+    if not np.any(~np.isnan(index_array)):
+        raise HTTPException(
+            422,
+            "Tidak ada pixel valid setelah nodata difilter. "
+            "Periksa nilai nodata dan isi band yang diupload."
+        )
 
     # ── 6. Threshold ───────────────────────────────────────
     threshold = compute_threshold(

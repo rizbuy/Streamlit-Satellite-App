@@ -53,6 +53,8 @@ def calculate_area_by_class(
 
     valid_mask = ~np.isnan(index_array)
     total_valid = int(np.sum(valid_mask))
+    if total_valid == 0:
+        raise ValueError("index_array tidak memiliki pixel valid untuk analisis area")
     total_area_ha = total_valid * pixel_area_ha
 
     # Jika threshold manual/otsu → override class jadi binary
@@ -65,10 +67,15 @@ def calculate_area_by_class(
 
     classes = []
     class_masks = {}   # simpan untuk GeoJSON export
+    max_upper_bound = max(high for _, high in class_thresholds.values())
 
     for label, (low, high) in class_thresholds.items():
         # Mask pixel yang masuk kelas ini
-        class_mask = (index_array >= low) & (index_array < high) & valid_mask
+        if high == max_upper_bound:
+            upper_mask = index_array <= high
+        else:
+            upper_mask = index_array < high
+        class_mask = (index_array >= low) & upper_mask & valid_mask
         count = int(np.sum(class_mask))
         class_masks[label] = class_mask
 
