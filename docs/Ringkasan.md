@@ -16,6 +16,7 @@ Proyek ini menggunakan berbagai teknologi modern berbasis Python:
 ```text
 Bands Analysis/
 ├── app/
+│   ├── main.py
 │   ├── api/
 │   │   └── v1/
 │   │       └── analyze.py
@@ -31,16 +32,17 @@ Bands Analysis/
 ├── .gitignore
 ├── docker-compose.yml
 ├── Dockerfile
-├── frontend.py
-├── main.py
+├── pyproject.toml
+├── uv.lock
+├── web/
+│   └── frontend.py
 ├── README.md
-└── requirements.txt
 ```
 
 ## 4. Penjelasan Setiap Subfolder dan File
-* **`main.py`**: Merupakan titik masuk (*entry point*) dari FastAPI. File ini menginisialisasi aplikasi FastAPI, mendaftarkan *router* API, dan memiliki *endpoint* dasar seperti `/health`.
-* **`frontend.py`**: Merupakan kode untuk *dashboard* interaktif yang dibangun menggunakan Streamlit. File ini menangani antarmuka pengguna, visualisasi hasil, serta interaksi untuk *upload* data.
-* **`requirements.txt`**: Daftar dependensi dan *library* Python yang dibutuhkan untuk menjalankan proyek.
+* **`app/main.py`**: Merupakan titik masuk (*entry point*) dari FastAPI. File ini menginisialisasi aplikasi FastAPI, mendaftarkan *router* API, dan memiliki *endpoint* dasar seperti `/health`.
+* **`web/frontend.py`**: Merupakan kode untuk *dashboard* interaktif yang dibangun menggunakan Streamlit. File ini menangani antarmuka pengguna, visualisasi hasil, serta interaksi untuk *upload* data.
+* **`pyproject.toml` dan `uv.lock`**: Sumber konfigurasi dan lockfile dependensi Python. Proyek ini menggunakan `uv sync` sebagai alur instalasi dependensi.
 * **`Dockerfile` & `docker-compose.yml`**: Digunakan untuk membungkus (*containerize*) aplikasi sehingga dapat dijalankan dengan mudah dan konsisten di berbagai sistem tanpa harus mengatur dependensi lokal secara manual.
 * **`README.md`**: Dokumentasi proyek yang menjelaskan cara instalasi, fitur utama, dan dokumentasi API.
 * **`outputs/`**: Folder yang digunakan untuk menyimpan hasil pemrosesan data (seperti file GeoTIFF atau GeoJSON hasil analisis).
@@ -54,8 +56,8 @@ Bands Analysis/
 ## 5. Flow Data Input
 Alur masuk dan pemrosesan data dalam proyek ini berjalan sebagai berikut:
 
-1. **User Interface (Input Data)**: Pengguna mengakses *dashboard* (melalui Streamlit di `frontend.py`). Pengguna memilih jenis *index* yang ingin dihitung (misalnya NDVI) dan mengunggah file citra satelit (*band*) yang sesuai (contoh: file `.tif` untuk band NIR dan RED).
-2. **Pengiriman Data (Request)**: Setelah pengguna menekan tombol analisis, `frontend.py` akan mengirimkan data file citra beserta konfigurasi (*index* dan *threshold method*) melalui HTTP POST request ke *endpoint* API FastAPI (`/analyze/upload-bands`).
+1. **User Interface (Input Data)**: Pengguna mengakses *dashboard* (melalui Streamlit di `web/frontend.py`). Pengguna memilih jenis *index* yang ingin dihitung (misalnya NDVI) dan mengunggah file citra satelit (*band*) yang sesuai (contoh: file `.tif` untuk band NIR dan RED).
+2. **Pengiriman Data (Request)**: Setelah pengguna menekan tombol analisis, `web/frontend.py` akan mengirimkan data file citra beserta konfigurasi (*index* dan *threshold method*) melalui HTTP POST request ke *endpoint* API FastAPI (`/analyze/upload-bands`).
 3. **Validasi (Backend)**: FastAPI menerima request tersebut. Melalui `app/schemas/request.py`, data request divalidasi. FastAPI juga mengecek `app/core/index_registry.py` untuk memastikan bahwa *band* yang diunggah sesuai dengan kebutuhan perhitungan *index* yang diminta.
 4. **Pemrosesan (Service Layer)**:
     * Citra akan dibaca menggunakan `rasterio` dan `numpy`.
@@ -63,4 +65,4 @@ Alur masuk dan pemrosesan data dalam proyek ini berjalan sebagai berikut:
     * Modul `app/services/threshold.py` kemudian akan mengklasifikasikan hasil piksel menjadi fitur yang diamati atau tidak (misalnya mana yang tumbuhan dan mana yang bukan) berdasarkan metode *threshold* (seperti algoritma Otsu).
     * Modul `app/services/area_calculator.py` akan menghitung berapa luas total area fitur tersebut berdasarkan ukuran piksel (resolusi spasial citra) dan membuat bentuk format vektornya (GeoJSON/GeoTIFF).
 5. **Pengembalian Data (Response)**: API akan mengembalikan file hasil pemrosesan (seperti status berhasil, matriks citra hasil perhitungan, data GeoJSON tutupan lahan, dan statistik luasnya) kembali ke *frontend*.
-6. **Visualisasi (Output Display)**: Terakhir, `frontend.py` menerima data tersebut dan menampilkan citra hasil analisis beserta grafik luasan areanya secara visual dan interaktif di layar pengguna. Pengguna juga diberi opsi untuk mengunduh hasil tersebut.
+6. **Visualisasi (Output Display)**: Terakhir, `web/frontend.py` menerima data tersebut dan menampilkan citra hasil analisis beserta grafik luasan areanya secara visual dan interaktif di layar pengguna. Pengguna juga diberi opsi untuk mengunduh hasil tersebut.

@@ -3,7 +3,7 @@
 Terhubung ke FastAPI backend untuk analisis NDVI, NDWI, dll.
 
 Jalankan:
-    streamlit run streamlit_app.py
+    uv run streamlit run web/frontend.py
 
 Pastikan FastAPI backend sudah berjalan di http://localhost:8000
 """
@@ -18,7 +18,7 @@ import os
 from pathlib import Path
 
 # ─── Opsional: import untuk visualisasi ──────────────────────────────────────
-# Install: pip install folium streamlit-folium rasterio matplotlib
+# Dependensi dikelola lewat pyproject.toml dan uv.lock. Jalankan: uv sync
 try:
     import folium
     from streamlit_folium import st_folium

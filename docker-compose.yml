@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   # Layanan 1: Backend FastAPI
   api:
     build: .
     # Perintah untuk menjalankan FastAPI
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+    command: ["uv", "run", "--no-sync", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
     ports:
       - "8000:8000"
     volumes:
@@ -17,7 +15,7 @@ services:
     environment:
       - API_BASE_URL=http://api:8000
     # Perintah untuk menjalankan Streamlit
-    command: streamlit run frontend.py --server.port 8501 --server.address 0.0.0.0
+    command: ["uv", "run", "--no-sync", "streamlit", "run", "web/frontend.py", "--server.port", "8501", "--server.address", "0.0.0.0"]
     ports:
       - "8501:8501"
     volumes:

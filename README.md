@@ -41,6 +41,7 @@ Client (Streamlit / API)
 ```
 Bands Analysis
 ├─ app
+│  ├─ main.py                  # FastAPI entry point (CORS, router)
 │  ├─ api
 │  │  ├─ v1
 │  │  │  ├─ analyze.py          # Route handlers: /analyze/upload-bands, /health
@@ -57,9 +58,10 @@ Bands Analysis
 │  │  ├─ threshold.py           # Strategi ambang batas: Otsu, quantile, manual
 │  │  └─ __init__.py
 │  └─ __init__.py
-├─ frontend.py                  # Dashboard interaktif Streamlit
-├─ main.py                      # FastAPI entry point (CORS, router)
-└─ requirements.txt             # Dependensi proyek
+├─ web
+│  └─ frontend.py               # Dashboard interaktif Streamlit
+├─ pyproject.toml               # Definisi dependensi proyek
+└─ uv.lock                      # Lockfile dependensi uv
 ```
 ---
 
@@ -96,35 +98,16 @@ Gunakan opsi manual di bawah jika tidak memakai Docker atau ingin menjalankan ba
 
 ### Opsi 2 — Menjalankan Manual Tanpa Docker
 
-Buat virtual environment:
+Sinkronkan dependency dengan lockfile:
 
 ```bash
-python -m venv .venv
-```
-
-Aktifkan virtual environment:
-
-```bash
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-```
-
-Atau untuk macOS / Linux:
-
-```bash
-source .venv/bin/activate
-```
-
-Install dependency:
-
-```bash
-pip install -r requirements.txt
+uv sync
 ```
 
 Jalankan backend FastAPI:
 
 ```bash
-uvicorn main:app --reload --port 8000
+uv run uvicorn app.main:app --reload --port 8000
 ```
 
 Backend akan tersedia di:
@@ -132,10 +115,10 @@ Backend akan tersedia di:
 * API: http://localhost:8000
 * API Docs: http://localhost:8000/docs
 
-Buka terminal kedua, aktifkan virtual environment lagi, lalu jalankan frontend Streamlit:
+Buka terminal kedua, lalu jalankan frontend Streamlit:
 
 ```bash
-streamlit run frontend.py
+uv run streamlit run web/frontend.py
 ```
 
 Frontend akan tersedia di:
@@ -143,6 +126,18 @@ Frontend akan tersedia di:
 * Dashboard: http://localhost:8501
 
 Pastikan backend tetap berjalan saat memakai frontend, karena dashboard akan mengirim request ke API di `http://localhost:8000`.
+
+Jika ingin menambahkan library baru, gunakan:
+
+```bash
+uv add nama-package
+```
+
+Setelah menarik perubahan dari GitHub, cukup jalankan ulang:
+
+```bash
+uv sync
+```
 
 ---
 
@@ -219,15 +214,44 @@ Endpoint yang digunakan:
 
 ## 📦 Dependencies
 
-```
-fastapi
-uvicorn
-streamlit
-rasterio
-numpy
-geopandas
-scikit-image
-```
+Dependensi dikelola lewat `pyproject.toml` dan dikunci di `uv.lock`.
+Gunakan `uv sync` untuk menyiapkan environment yang konsisten.
 
 ---
 
+
+```
+Bands Analysis
+├─ .dockerignore
+├─ .python-version
+├─ app
+│  ├─ main.py
+│  ├─ api
+│  │  ├─ v1
+│  │  │  ├─ analyze.py
+│  │  │  └─ __init__.py
+│  │  └─ __init__.py
+│  ├─ core
+│  │  ├─ index_registry.py
+│  │  └─ __init__.py
+│  ├─ schemas
+│  │  ├─ request.py
+│  │  └─ __init__.py
+│  ├─ services
+│  │  ├─ area_calculator.py
+│  │  ├─ threshold.py
+│  │  └─ __init__.py
+│  └─ __init__.py
+├─ docker-compose.yml
+├─ Dockerfile
+├─ pyproject.toml
+├─ README.md
+├─ docs
+│  └─ Ringkasan.md
+├─ tests
+│  └─ test_analyze.py
+├─ web
+│  └─ frontend.py
+└─ uv.lock
+
+```
