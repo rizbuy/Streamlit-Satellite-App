@@ -1,20 +1,27 @@
 # app/api/v1/analyze.py
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, BackgroundTasks
 from fastapi.responses import FileResponse
 from typing import Annotated
 import rasterio
 import numpy as np
 import tempfile, os, uuid
+import logging
+import filetype
 from pathlib import Path
+from rasterio.fill import fillnodata
 from app.core.index_registry import INDEX_REGISTRY
 from app.services.threshold import compute_threshold
 from app.services.area_calculator import calculate_area_by_class
 from app.schemas.request import IndexName, ThresholdMethod
 
+logger = logging.getLogger(__name__)
+
 router = APIRouter(prefix="/analyze", tags=["Band Analysis"])
 OUTPUT_DIR = Path("outputs")
 OUTPUT_DIR.mkdir(exist_ok=True)
 
+MAX_FILE_SIZE_MB = 200
+MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_MB * 1024 * 1024
 
 def load_band(file: UploadFile) -> tuple[np.ndarray, dict]:
     """
@@ -26,25 +33,26 @@ def load_band(file: UploadFile) -> tuple[np.ndarray, dict]:
         tmp.write(file.file.read())
         tmp_path = tmp.name
 
-    with rasterio.open(tmp_path) as src:
-        data = src.read(1).astype(np.float32)   # ambil band pertama
-        meta = {
-            "crs":       src.crs,
-            "transform": src.transform,
-            "resolution": src.res,               # (pixel_width, pixel_height) in CRS units
-            "bounds":    tuple(src.bounds),
-            "shape":     (src.height, src.width),
-            "nodata":    src.nodata,
-        }
-
-    os.unlink(tmp_path)   # hapus tempfile
+    try:
+        with rasterio.open(tmp_path) as src:
+            data = src.read(1).astype(np.float32)   # ambil band pertama
+            meta = {
+                "crs":       src.crs,
+                "transform": src.transform,
+                "resolution": src.res,               # (pixel_width, pixel_height) in CRS units
+                "bounds":    tuple(src.bounds),
+                "shape":     (src.height, src.width),
+                "nodata":    src.nodata,
+            }
+    finally:
+        if os.path.exists(tmp_path):
+            os.unlink(tmp_path)   # hapus tempfile dengan aman
 
     # Replace nodata dengan NaN
     if meta["nodata"] is not None:
         data = np.where(data == meta["nodata"], np.nan, data)
 
     return data, meta
-
 
 def validate_bands_compatible(metas: list[dict]) -> float:
     """
@@ -105,6 +113,49 @@ def validate_bands_compatible(metas: list[dict]) -> float:
     return resolution_m
 
 
+def validate_file(file: UploadFile, band_name: str):
+    if not file:
+        return
+
+    # 1. Size Validation
+    if file.size and file.size > MAX_FILE_SIZE_BYTES:
+        raise HTTPException(status_code=413, detail=f"File {band_name} melebihi batas {MAX_FILE_SIZE_MB}MB.")
+
+    # 2. Type Validation - Lebih Permissive
+    header = file.file.read(512)  # Cukup 512 bytes
+    file.file.seek(0)
+
+    # Cek TIFF magic bytes (lebih robust)
+    tiff_signatures = [
+        b"II*\x00",   # Little-endian TIFF
+        b"MM\x00*",   # Big-endian TIFF
+        b"II+\x00",   # Little-endian BigTIFF
+        b"MM\x00+",   # Big-endian BigTIFF
+    ]
+
+    # Cek apakah ada signature TIFF di 8 bytes pertama
+    is_tiff = any(header[:4] == sig for sig in tiff_signatures)
+
+    # Fallback: cek extension jika magic bytes gagal
+    if not is_tiff:
+        if not file.filename.lower().endswith(('.tif', '.tiff')):
+            raise HTTPException(
+                status_code=415,
+                detail=f"File {band_name} bukan tipe TIFF/GeoTIFF yang valid."
+            )
+
+    # 3. Validasi tambahan dengan GDAL/rasterio (opsional tapi recommended)
+    try:
+        file.file.seek(0)
+        with rasterio.open(file.file) as src:
+            if src.driver != 'GTiff':
+                raise HTTPException(status_code=415, detail="Bukan GeoTIFF valid")
+    except Exception as e:
+        raise HTTPException(status_code=415, detail=f"File TIFF korup atau tidak valid: {str(e)}")
+    finally:
+        file.file.seek(0)
+
+
 @router.post("/upload-bands")
 async def analyze_from_bands(
     index_name: Annotated[IndexName, Form()],
@@ -161,6 +212,12 @@ async def analyze_from_bands(
                 "manual_threshold harus berada dalam rentang -1.0 sampai 1.0"
             )
 
+    logger.info(f"Memulai perhitungan {index_name.value} dengan band: {required}")
+
+    # Validasi Keamanan (Size & Type)
+    for band_name in required:
+        validate_file(uploaded[band_name], band_name)
+
     # ── 3. Load semua band yang dibutuhkan ─────────────────
     bands = {}
     metas = []
@@ -175,6 +232,16 @@ async def analyze_from_bands(
 
     # ── 5. Hitung index ────────────────────────────────────
     index_array = idx_def.formula(bands)
+
+    # Isi pixel kosong (garis tipis) akibat tiling/grid mismatch antar band
+    valid_mask = ~np.isnan(index_array)
+    index_array = fillnodata(
+        index_array,
+        mask=valid_mask.astype(np.uint8),
+        max_search_distance=3,
+        smoothing_iterations=0
+    )
+
     index_array = np.clip(index_array, *idx_def.value_range)
     if not np.any(~np.isnan(index_array)):
         raise HTTPException(
@@ -212,7 +279,10 @@ async def analyze_from_bands(
         height=index_array.shape[0], width=index_array.shape[1],
         count=1, dtype="float32",
         crs=primary_meta["crs"],
-        transform=primary_meta["transform"]
+        transform=primary_meta["transform"],
+        nodata=np.nan,
+        compress="lzw",
+        tiled=True
     ) as dst:
         dst.write(index_array, 1)
 
@@ -250,8 +320,16 @@ async def analyze_from_bands(
             "geojson": f"/analyze/download/{job_id}/{index_name.value}/geojson",
         }
     }
+def remove_file(path: Path):
+    try:
+        if path.exists():
+            path.unlink()
+            logger.info(f"File dihapus secara otomatis: {path.name}")
+    except Exception as e:
+        logger.error(f"Gagal menghapus file {path.name}: {e}")
+
 @router.get("/download/{job_id}/{index_name}/{file_type}")
-async def download_result(job_id: str, index_name: str, file_type: str):
+async def download_result(job_id: str, index_name: str, file_type: str, background_tasks: BackgroundTasks):
     if file_type == "tif":
         path = OUTPUT_DIR / f"{job_id}_{index_name}.tif"
         media = "image/tiff"
@@ -260,8 +338,11 @@ async def download_result(job_id: str, index_name: str, file_type: str):
         media = "application/geo+json"
     else:
         raise HTTPException(400, "file_type harus 'tif' atau 'geojson'")
-    
+
     if not path.exists():
         raise HTTPException(404, f"File tidak ditemukan: {path.name}")
-    
+
+    # Jadwalkan penghapusan file setelah file terkirim
+    background_tasks.add_task(remove_file, path)
+
     return FileResponse(path, media_type=media, filename=path.name)

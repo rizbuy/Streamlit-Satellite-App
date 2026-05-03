@@ -48,10 +48,13 @@ INDEX_CONFIG = {
         "icon":         "🌿",
         "color_map":    "RdYlGn",
         "classes": {
-            "water_barren":           {"range": (-1.0, 0.0),  "color": "#2166ac", "label": "Air / Lahan Gundul"},
-            "sparse_vegetation":      {"range": (0.0,  0.2),  "color": "#d9ef8b", "label": "Vegetasi Jarang"},
-            "moderate_vegetation":    {"range": (0.2,  0.4),  "color": "#66bd63", "label": "Vegetasi Sedang"},
-            "dense_vegetation":       {"range": (0.4,  1.0),  "color": "#1a7837", "label": "Vegetasi Lebat"},
+            "barren / non_veg":       {"range": (-1.0, 0.00), "color": "#2166ac", "label": "Lahan Gundul / Non-Vegetasi"},
+            "very_sparse":            {"range": (0.00, 0.10), "color": "#f6e8c3", "label": "Sangat Minim Hijau"},
+            "low_vegetation":         {"range": (0.10, 0.20), "color": "#dfc27d", "label": "Vegetasi Rendah"},
+            "sparse_vegetation":      {"range": (0.20, 0.30), "color": "#d9ef8b", "label": "Vegetasi Jarang"},
+            "moderate_vegetation":    {"range": (0.30, 0.50), "color": "#a6d96a", "label": "Vegetasi Sedang"},
+            "dense_vegetation":       {"range": (0.50, 0.80), "color": "#1a9850", "label": "Vegetasi Lebat"},
+            "very_dense":             {"range": (0.80, 1.0),  "color": "#006837", "label": "Vegetasi Sangat Lebat"},
         },
     },
     "NDWI": {
@@ -62,8 +65,11 @@ INDEX_CONFIG = {
         "icon":         "💧",
         "color_map":    "RdBu",
         "classes": {
-            "land":  {"range": (-1.0, 0.0), "color": "#d6604d", "label": "Daratan"},
-            "water": {"range": (0.0,  1.0), "color": "#4393c3", "label": "Badan Air"},
+            "built_up / shadow":      {"range": (-1.0, -0.1), "color": "#b2182b", "label": "Bangunan / Bayangan"},
+            "very_low_water":         {"range": (-0.1, 0.0),  "color": "#d6604d", "label": "Kelembaban Sangat Rendah"},
+            "land":                   {"range": (0.0,  0.2),  "color": "#f4a582", "label": "Daratan Kering"},
+            "wet_soil":               {"range": (0.2,  0.3),  "color": "#92c5de", "label": "Tanah Basah"},
+            "water":                  {"range": (0.3,  1.0),  "color": "#2166ac", "label": "Badan Air"},
         },
     },
     "MNDWI": {
@@ -74,8 +80,11 @@ INDEX_CONFIG = {
         "icon":         "🌊",
         "color_map":    "RdBu",
         "classes": {
-            "land":  {"range": (-1.0, 0.3), "color": "#bf812d", "label": "Daratan"},
-            "water": {"range": (0.3,  1.0), "color": "#35978f", "label": "Badan Air"},
+            "built_up":               {"range": (-1.0, 0.1), "color": "#8c510a", "label": "Area Bangunan"},
+            "dry_soil":               {"range": (0.1,  0.2), "color": "#dfc27d", "label": "Tanah Kering"},
+            "wet_soil":               {"range": (0.2,  0.3), "color": "#80cdc1", "label": "Tanah Basah"},
+            "non_urban_water":        {"range": (0.3,  0.4), "color": "#35978f", "label": "Air Non-Perkotaan"},
+            "urban_water":            {"range": (0.4,  1.0), "color": "#01665e", "label": "Air Perkotaan"},
         },
     },
     "NDBI": {
@@ -86,8 +95,11 @@ INDEX_CONFIG = {
         "icon":         "🏙️",
         "color_map":    "OrRd",
         "classes": {
-            "non_urban": {"range": (-1.0, 0.0), "color": "#74c476", "label": "Non-Urban"},
-            "urban":     {"range": (0.0,  1.0), "color": "#e6550d", "label": "Area Terbangun"},
+            "non_urban":              {"range": (-1.0, 0.0),  "color": "#74c476", "label": "Non-Urban (Vegetasi/Air)"},
+            "semi_urban":             {"range": (0.0,  0.15), "color": "#fee391", "label": "Semi Urban / Campuran"},
+            "urban_low":              {"range": (0.15, 0.25), "color": "#fec44f", "label": "Kepadatan Rendah"},
+            "urban_high":             {"range": (0.25, 0.50), "color": "#fe9929", "label": "Kepadatan Tinggi"},
+            "extreme_built":          {"range": (0.50, 1.0),  "color": "#cc4c02", "label": "Sangat Padat (Pusat Kota)"},
         },
     },
     "EVI": {
@@ -98,9 +110,12 @@ INDEX_CONFIG = {
         "icon":         "🌳",
         "color_map":    "RdYlGn",
         "classes": {
-            "non_vegetation":    {"range": (-1.0, 0.1), "color": "#d73027", "label": "Non-Vegetasi"},
-            "sparse_vegetation": {"range": (0.1,  0.3), "color": "#fee08b", "label": "Vegetasi Jarang"},
-            "dense_vegetation":  {"range": (0.3,  1.0), "color": "#1a9850", "label": "Vegetasi Lebat"},
+            "non_vegetation":         {"range": (-1.0, 0.05), "color": "#d73027", "label": "Non-Vegetasi"},
+            "very_sparse":            {"range": (0.05, 0.15), "color": "#f46d43", "label": "Sangat Minim"},
+            "sparse_vegetation":      {"range": (0.15, 0.25), "color": "#fdae61", "label": "Vegetasi Jarang"},
+            "moderate_vegetation":    {"range": (0.25, 0.40), "color": "#a6d96a", "label": "Vegetasi Sedang"},
+            "dense_vegetation":       {"range": (0.40, 0.70), "color": "#1a9850", "label": "Vegetasi Lebat"},
+            "very_dense":             {"range": (0.70, 1.0),  "color": "#006837", "label": "Vegetasi Sangat Lebat"},
         },
     },
 }
@@ -621,124 +636,101 @@ st.markdown(f"""
 
 
 # ── STEP 3: Upload Band Files ─────────────────────────────────────────────────
-st.markdown('<div class="step-label">STEP 03 — UPLOAD BAND FILES</div>',
-            unsafe_allow_html=True)
-
-idx = INDEX_CONFIG[selected_index]
-required_bands = idx["required"]
-
-# Hint box
-bands_str = " + ".join([f"`{b.upper()}.tif`" for b in required_bands])
-st.markdown(
-    f'<div class="upload-hint">'
-    f'<strong style="color:#c9d8d0;">{selected_index}</strong> membutuhkan '
-    f'{len(required_bands)} band: {bands_str}<br>'
-    f'<span style="font-size:0.8rem;">Pastikan semua band sudah dalam CRS dan resolusi yang sama '
-    f'sebelum diupload.</span>'
-    f'</div>',
-    unsafe_allow_html=True
-)
-
-# Buat kolom dinamis sesuai jumlah band
-n_bands = len(required_bands)
-cols = st.columns(n_bands)
-
-uploaded_files = {}
-all_uploaded = True
-
-for i, band_name in enumerate(required_bands):
-    with cols[i]:
-        label, hint = BAND_LABELS.get(band_name, (band_name.upper(), ""))
-        st.markdown(f"**{label}**")
-        st.caption(hint)
-
-        file = st.file_uploader(
-            f"Upload {band_name.upper()} band",
-            type=["tif", "tiff"],
-            key=f"upload_{selected_index}_{band_name}",
-            label_visibility="collapsed"
-        )
-
-        if file:
-            st.success(f"✓ {file.name}")
-            # Preview sederhana: tampilkan ukuran file
-            size_kb = len(file.getvalue()) / 1024
-            st.caption(f"📦 {size_kb:.1f} KB")
-            uploaded_files[band_name] = file
-        else:
-            st.markdown(
-                f'<div style="color:#78a89a; font-size:0.8rem; '
-                f'padding:0.5rem; border:1px dashed #2a4a5a; '
-                f'border-radius:8px; text-align:center;">'
-                f'Drop {band_name.upper()}.tif di sini</div>',
-                unsafe_allow_html=True
+with st.form(key=f"analysis_form_{selected_index}"):
+    st.markdown('<div class="step-label">STEP 03 — UPLOAD BAND FILES</div>',
+                unsafe_allow_html=True)
+    
+    idx = INDEX_CONFIG[selected_index]
+    required_bands = idx["required"]
+    
+    # Hint box
+    bands_str = " + ".join([f"`{b.upper()}.tif`" for b in required_bands])
+    st.markdown(
+        f'<div class="upload-hint">'
+        f'<strong style="color:#c9d8d0;">{selected_index}</strong> membutuhkan '
+        f'{len(required_bands)} band: {bands_str}<br>'
+        f'<span style="font-size:0.8rem;">Pastikan semua band sudah dalam CRS dan resolusi yang sama '
+        f'sebelum diupload.</span>'
+        f'</div>',
+        unsafe_allow_html=True
+    )
+    
+    # Buat kolom dinamis sesuai jumlah band
+    n_bands = len(required_bands)
+    cols = st.columns(n_bands)
+    
+    uploaded_files = {}
+    
+    for i, band_name in enumerate(required_bands):
+        with cols[i]:
+            label, hint = BAND_LABELS.get(band_name, (band_name.upper(), ""))
+            st.markdown(f"**{label}**")
+            st.caption(hint)
+    
+            file = st.file_uploader(
+                f"Upload {band_name.upper()} band",
+                type=["tif", "tiff"],
+                key=f"upload_{selected_index}_{band_name}",
+                label_visibility="collapsed"
             )
-            all_uploaded = False
+            uploaded_files[band_name] = file
+            
+    st.divider()
+    
+    # ── STEP 4: Analisis ──────────────────────────────────────────────────────────
+    st.markdown('<div class="step-label">STEP 04 — JALANKAN ANALISIS</div>',
+                unsafe_allow_html=True)
+    
+    st.markdown(
+        '<div style="font-size:0.85rem; color:#78a89a; margin-bottom:1rem;">'
+        '💡 <strong>Info:</strong> Masukkan (drag-and-drop) semua file TIF yang dibutuhkan ke dalam kotak masing-masing. '
+        'Layar <strong>TIDAK AKAN</strong> me-refresh sampai Anda menekan tombol di bawah. '
+        'Setelah semua file diletakkan, tekan tombol <strong>Jalankan Analisis</strong>. '
+        'Jika ada file yang belum dimasukkan, sistem akan menjalankan Demo Mode.'
+        '</div>', 
+        unsafe_allow_html=True
+    )
 
-st.divider()
+    run_btn = st.form_submit_button("🚀 Jalankan Analisis / Demo", width="stretch")
 
-
-# ── STEP 4: Analisis ──────────────────────────────────────────────────────────
-st.markdown('<div class="step-label">STEP 04 — JALANKAN ANALISIS</div>',
-            unsafe_allow_html=True)
-
-col_btn, col_info = st.columns([2, 5])
-
-with col_btn:
-    # Mode: real API atau demo
-    if all_uploaded:
-        btn_label = f"🔍 Analisis {selected_index}"
-        btn_help = "Kirim band ke API dan hitung index"
-    else:
-        btn_label = "🎯 Coba Demo Mode"
-        btn_help = f"Jalankan simulasi {selected_index} tanpa upload file"
-
-    run_btn = st.button(btn_label, use_container_width=True, help=btn_help)
-
-with col_info:
-    if not all_uploaded:
-        st.markdown(
-            '<div class="warning-box">Upload semua band untuk analisis nyata, '
-            'atau klik Demo Mode untuk lihat contoh output.</div>',
-            unsafe_allow_html=True
-        )
-    else:
-        st.markdown(
-            f'<div class="success-box">Semua {n_bands} band siap dianalisis.</div>',
-            unsafe_allow_html=True
-        )
-
+# Cek apakah semua file sudah diisi (dievaluasi setelah tombol submit ditekan)
+all_uploaded = all(f is not None for f in uploaded_files.values())
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # HASIL ANALISIS
 # ═══════════════════════════════════════════════════════════════════════════════
 
-if run_btn:
-    with st.spinner(f"⚙️ Menghitung {selected_index}..."):
-        try:
-            if all_uploaded and api_ok:
-                # ── Real API call ────────────────────────────────────────────
-                result = call_analysis_api(
-                    index_name=selected_index,
-                    band_files=uploaded_files,
-                    threshold_method=threshold_method,
-                    manual_threshold=manual_threshold
-                )
-                demo_mode = False
-            else:
-                # ── Demo / simulasi ──────────────────────────────────────────
-                import time; time.sleep(1.5)   # simulasi loading
-                result = simulate_analysis(
-                    selected_index, threshold_method, manual_threshold
-                )
-                demo_mode = True
+if run_btn or (st.session_state.get("last_result") and st.session_state.get("last_index") == selected_index):
+    if run_btn:
+        with st.spinner(f"⚙️ Menghitung {selected_index}..."):
+            try:
+                if all_uploaded and api_ok:
+                    # ── Real API call ────────────────────────────────────────────
+                    result = call_analysis_api(
+                        index_name=selected_index,
+                        band_files=uploaded_files,
+                        threshold_method=threshold_method,
+                        manual_threshold=manual_threshold
+                    )
+                    demo_mode = False
+                else:
+                    # ── Demo / simulasi ──────────────────────────────────────────
+                    import time; time.sleep(1.5)   # simulasi loading
+                    result = simulate_analysis(
+                        selected_index, threshold_method, manual_threshold
+                    )
+                    demo_mode = True
 
-            st.session_state["last_result"] = result
-            st.session_state["last_index"] = selected_index
+                st.session_state["last_result"] = result
+                st.session_state["last_index"] = selected_index
 
-        except Exception as e:
-            st.error(f"❌ Analisis gagal: {str(e)}")
-            result = None
+            except Exception as e:
+                st.error(f"❌ Analisis gagal: {str(e)}")
+                result = None
+                st.session_state["last_result"] = None
+    else:
+        result = st.session_state["last_result"]
+        demo_mode = result.get("_demo_mode", False)
 
     if result:
         # Demo badge
@@ -828,7 +820,7 @@ if run_btn:
 
             if RASTERIO_AVAILABLE:
                 fig = render_area_chart(classes, INDEX_CONFIG[selected_index])
-                st.pyplot(fig, use_container_width=True)
+                st.pyplot(fig, width="stretch")
                 plt.close(fig)
             else:
                 # Fallback: Streamlit native bar chart
@@ -857,7 +849,7 @@ if run_btn:
 
             st.dataframe(
                 df,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True,
             )
 
@@ -865,7 +857,7 @@ if run_btn:
         st.divider()
         st.markdown("#### 💾 Download Hasil")
 
-        dl_col1, dl_col2, dl_col3 = st.columns(3)
+        dl_col1, dl_col2, dl_col3, dl_col4 = st.columns(4)
 
         # JSON Result
         with dl_col1:
@@ -875,7 +867,7 @@ if run_btn:
                 data=json_str,
                 file_name=f"{selected_index}_result_{result.get('job_id','demo')}.json",
                 mime="application/json",
-                use_container_width=True,
+                width="stretch",
                 help="Download hasil analisis lengkap dalam format JSON"
             )
 
@@ -902,24 +894,77 @@ if run_btn:
                 data=csv_str,
                 file_name=f"{selected_index}_area_{result.get('job_id','demo')}.csv",
                 mime="text/csv",
-                use_container_width=True,
+                width="stretch",
                 help="Download ringkasan luasan dalam format CSV"
             )
 
-        # GeoTIFF / GeoJSON link (hanya jika dari API nyata)
+        # GeoTIFF link (hanya jika dari API nyata)
         with dl_col3:
             if not demo_mode:
                 tif_url = f"{API_BASE}{result['downloads']['geotiff']}"
-                st.link_button(
-                    "🗺️ Download GeoTIFF",
-                    url=tif_url,
-                    use_container_width=True,
-                )
+                tif_key = f"tif_data_{result.get('job_id')}"
+                if tif_key not in st.session_state:
+                    try:
+                        # Fetch TIFF dari backend hanya sekali
+                        tif_response = requests.get(tif_url)
+                        if tif_response.status_code == 200:
+                            st.session_state[tif_key] = tif_response.content
+                        else:
+                            st.session_state[tif_key] = None
+                    except Exception:
+                        st.session_state[tif_key] = None
+                
+                if st.session_state.get(tif_key):
+                    st.download_button(
+                        label="🗺️ Download GeoTIFF",
+                        data=st.session_state[tif_key],
+                        file_name=f"{selected_index}_result_{result.get('job_id')}.tif",
+                        mime="image/tiff",
+                        width="stretch",
+                        help="Download hasil analisis dalam format GeoTIFF (Raster)"
+                    )
+                else:
+                    st.button("🗺️ Download GeoTIFF", disabled=True, width="stretch", help="File tidak tersedia di server")
             else:
                 st.button(
                     "🗺️ Download GeoTIFF",
                     disabled=True,
-                    use_container_width=True,
+                    width="stretch",
+                    help="Tersedia setelah upload band GeoTIFF nyata"
+                )
+
+        # GeoJSON link (hanya jika dari API nyata)
+        with dl_col4:
+            if not demo_mode:
+                geojson_url = f"{API_BASE}{result['downloads']['geojson']}"
+                geojson_key = f"geojson_data_{result.get('job_id')}"
+                if geojson_key not in st.session_state:
+                    try:
+                        # Fetch GeoJSON dari backend hanya sekali
+                        geojson_response = requests.get(geojson_url)
+                        if geojson_response.status_code == 200:
+                            st.session_state[geojson_key] = geojson_response.content
+                        else:
+                            st.session_state[geojson_key] = None
+                    except Exception:
+                        st.session_state[geojson_key] = None
+                
+                if st.session_state.get(geojson_key):
+                    st.download_button(
+                        label="📐 Download GeoJSON",
+                        data=st.session_state[geojson_key],
+                        file_name=f"{selected_index}_vector_{result.get('job_id')}.geojson",
+                        mime="application/geo+json",
+                        width="stretch",
+                        help="Download data vektor dalam format GeoJSON"
+                    )
+                else:
+                    st.button("📐 Download GeoJSON", disabled=True, width="stretch", help="File tidak tersedia di server")
+            else:
+                st.button(
+                    "📐 Download GeoJSON",
+                    disabled=True,
+                    width="stretch",
                     help="Tersedia setelah upload band GeoTIFF nyata"
                 )
 
@@ -939,13 +984,17 @@ if run_btn:
         interp_map = {
             "NDVI": {
                 "dense_vegetation": f"Area ini memiliki **tutupan vegetasi lebat yang dominan** ({dominant_pct:.1f}% / {dominant_ha:,.1f} ha). Kondisi ini menunjukkan ekosistem yang sehat dan produktif.",
-                "water_barren": f"Sebagian besar area ({dominant_pct:.1f}%) teridentifikasi sebagai **air atau lahan gundul**. Perlu investigasi lebih lanjut untuk membedakan badan air dari lahan terdegradasi.",
+                "very_dense": f"Sangat baik! Area ini memiliki **tutupan vegetasi sangat lebat** ({dominant_pct:.1f}% / {dominant_ha:,.1f} ha). Ekosistem dalam kondisi optimal.",
+                "barren / non_veg": f"Sebagian besar area ({dominant_pct:.1f}%) teridentifikasi sebagai **lahan gundul atau air**. Perlu investigasi lebih lanjut untuk membedakan badan air dari lahan terdegradasi.",
                 "sparse_vegetation": f"Vegetasi jarang mendominasi ({dominant_pct:.1f}%). Indikasi kemungkinan **degradasi lahan atau masa awal revegetasi**.",
+                "very_sparse": f"Sangat minim vegetasi pada area ini ({dominant_pct:.1f}%).",
+                "low_vegetation": f"Terdapat vegetasi rendah seperti semak atau ladang muda ({dominant_pct:.1f}%).",
                 "moderate_vegetation": f"Vegetasi sedang mendominasi ({dominant_pct:.1f}%). Area dalam kondisi **cukup sehat** namun berpotensi ditingkatkan.",
             },
             "NDWI": {
                 "water": f"**{dominant_pct:.1f}% area** teridentifikasi sebagai badan air ({dominant_ha:,.1f} ha). Area ini memiliki kandungan air yang signifikan.",
-                "land":  f"**{dominant_pct:.1f}% area** adalah daratan. Kandungan air dalam vegetasi relatif rendah.",
+                "land":  f"**{dominant_pct:.1f}% area** adalah daratan kering. Kandungan air dalam vegetasi relatif rendah.",
+                "wet_soil": f"Dominasi **tanah basah** ditemukan ({dominant_pct:.1f}%).",
             },
         }
 
@@ -964,9 +1013,9 @@ if run_btn:
         st.info(interpretation)
 
         # Rekomendasi
-        if selected_index == "NDVI" and dominant == "dense_vegetation" and dominant_pct > 50:
+        if selected_index == "NDVI" and dominant in ("dense_vegetation", "very_dense") and dominant_pct > 50:
             st.success("🌿 **Rekomendasi:** Pertimbangkan area ini sebagai zona konservasi prioritas.")
-        elif selected_index == "NDVI" and dominant in ("water_barren", "sparse_vegetation") and dominant_pct > 40:
+        elif selected_index == "NDVI" and dominant in ("barren / non_veg", "very_sparse", "low_vegetation", "sparse_vegetation") and dominant_pct > 40:
             st.warning("⚠️ **Rekomendasi:** Perlu program rehabilitasi atau revegetasi untuk area ini.")
 
 
