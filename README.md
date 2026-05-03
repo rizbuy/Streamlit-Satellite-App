@@ -63,25 +63,84 @@ Bands Analysis
 
 ## ⚡ Quick Start
 
+Clone repository:
+
 ```bash
 git clone https://github.com/your-username/bands-analysis.git
 cd bands-analysis
+```
 
+### Opsi 1 — Menjalankan dengan Docker
+
+Jika repository sudah memiliki file Docker / Docker Compose, cara paling praktis untuk menjalankan project adalah:
+
+```bash
+docker compose up --build
+```
+
+Setelah container berjalan, akses aplikasi melalui:
+
+* Backend API: http://localhost:8000
+* API Docs: http://localhost:8000/docs
+* Dashboard Frontend: http://localhost:8501
+
+Untuk menghentikan container:
+
+```bash
+docker compose down
+```
+
+Gunakan opsi manual di bawah jika tidak memakai Docker atau ingin menjalankan backend dan frontend secara terpisah saat development.
+
+### Opsi 2 — Menjalankan Manual Tanpa Docker
+
+Buat virtual environment:
+
+```bash
 python -m venv .venv
-source .venv/bin/activate  # atau Windows
+```
 
+Aktifkan virtual environment:
+
+```bash
+# Windows PowerShell
+.venv\Scripts\Activate.ps1
+```
+
+Atau untuk macOS / Linux:
+
+```bash
+source .venv/bin/activate
+```
+
+Install dependency:
+
+```bash
 pip install -r requirements.txt
 ```
 
-Run:
+Jalankan backend FastAPI:
 
 ```bash
-uvicorn main:app --reload
+uvicorn main:app --reload --port 8000
+```
+
+Backend akan tersedia di:
+
+* API: http://localhost:8000
+* API Docs: http://localhost:8000/docs
+
+Buka terminal kedua, aktifkan virtual environment lagi, lalu jalankan frontend Streamlit:
+
+```bash
 streamlit run frontend.py
 ```
 
+Frontend akan tersedia di:
+
 * Dashboard: http://localhost:8501
-* API Docs: http://localhost:8000/docs
+
+Pastikan backend tetap berjalan saat memakai frontend, karena dashboard akan mengirim request ke API di `http://localhost:8000`.
 
 ---
 
@@ -142,9 +201,17 @@ Fitur utama:
 
 ## 🐳 Docker
 
+Project ini dapat dijalankan menggunakan Docker Compose:
+
 ```bash
 docker compose up --build
 ```
+
+Endpoint yang digunakan:
+
+* Backend API: http://localhost:8000
+* API Docs: http://localhost:8000/docs
+* Dashboard Frontend: http://localhost:8501
 
 ---
 
