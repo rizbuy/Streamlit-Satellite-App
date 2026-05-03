@@ -38,6 +38,7 @@ Client (Streamlit / API)
  │ Area Stats  │
  └─────────────┘
 ```
+```
 Bands Analysis
 ├─ app
 │  ├─ api
@@ -59,6 +60,7 @@ Bands Analysis
 ├─ frontend.py                  # Dashboard interaktif Streamlit
 ├─ main.py                      # FastAPI entry point (CORS, router)
 └─ requirements.txt             # Dependensi proyek
+```
 ---
 
 ## ⚡ Quick Start
