@@ -164,7 +164,3 @@ scikit-image
 
 ---
 
-## 👤 Author
-
-**Rizky**
-Data Scientist & GIS Analyst
